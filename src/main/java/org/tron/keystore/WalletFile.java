@@ -12,13 +12,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 
-/**
- * Ethereum wallet file.
- */
+// 钱包文件
 public class WalletFile {
+    //-  address : 钱包地址。
     private String address;
+    //-  crypto : 加密信息，类型为  Crypto 。
     private Crypto crypto;
+    //-  id : 钱包文件的唯一标识符。
     private String id;
+    //-  version : 钱包文件的版本号。
     private int version;
 
     public WalletFile() {
@@ -100,14 +102,19 @@ public class WalletFile {
         return result;
     }  
 
+    // 钱包的加密信息。
     public static class Crypto {
+        // -  cipher : 加密算法。
         private String cipher;
+        //-  ciphertext : 加密后的数据。
         private String ciphertext;
+        //-  cipherparams : 加密参数，类型为  CipherParams 。
         private CipherParams cipherparams;
-
+        //-  kdf : 密钥派生函数。
         private String kdf;
+        //-  kdfparams : 密钥派生函数参数，类型为  KdfParams 。
         private KdfParams kdfparams;
-
+        //-  mac : 消息认证码。
         private String mac;
 
         public Crypto() {
@@ -269,6 +276,7 @@ public class WalletFile {
         String getSalt();
     }
 
+    // Aes128CtrKdfParams  的静态内部类，表示 AES-128 CTR 密钥派生函数参数。
     public static class Aes128CtrKdfParams implements KdfParams {
         private int dklen;
         private int c;
@@ -345,7 +353,7 @@ public class WalletFile {
             return result;
         }        
     }
-
+    // ScryptKdfParams  的静态内部类，表示 Scrypt 密钥派生函数参数。
     public static class ScryptKdfParams implements KdfParams {
         private int dklen;
         private int n;
@@ -436,6 +444,7 @@ public class WalletFile {
 
     // If we need to work with MyEtherWallet we'll need to use this deserializer, see the
     // following issue https://github.com/kvhnuke/etherwallet/issues/269
+    // KdfParamsDeserialiser  的静态内部类，用于反序列化  KdfParams 。
     static class KdfParamsDeserialiser extends JsonDeserializer<KdfParams> {
 
         @Override

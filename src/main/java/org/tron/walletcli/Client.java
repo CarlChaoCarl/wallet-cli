@@ -413,6 +413,7 @@ public class Client {
     return result;
   }
 
+  // 注册新钱包
   private void registerWallet() throws CipherException, IOException {
     char[] password = Utils.inputPassword2Twice();
     String fileName = walletApiWrapper.registerWallet(password);
@@ -425,6 +426,7 @@ public class Client {
     System.out.println("Register a wallet successful, keystore file name is " + fileName);
   }
 
+  // 导入一个钱包
   private void importWallet() throws CipherException, IOException {
     char[] password = Utils.inputPassword2Twice();
     byte[] priKey = inputPrivateKey();
@@ -440,6 +442,7 @@ public class Client {
     System.out.println("Import a wallet successful, keystore file name is " + fileName);
   }
 
+  // 通过Base64编码导入一个钱包
   private void importWalletByBase64() throws CipherException, IOException {
     char[] password = Utils.inputPassword2Twice();
     byte[] priKey = inputPrivateKey64();
@@ -455,6 +458,7 @@ public class Client {
     System.out.println("Import a wallet successful, keystore file name is " + fileName);
   }
 
+  // 更改用户的密码
   private void changePassword() throws IOException, CipherException {
     System.out.println("Please input old password.");
     char[] oldPassword = Utils.inputPassword(false);
@@ -490,6 +494,8 @@ public class Client {
     }
   }
 
+  // 备份钱包并打印备份的私钥
+  //    如果备份成功，程序将打印成功消息和私钥的每个字节，并在最后清除私钥信息以保护安全。
   private void backupWallet() throws IOException, CipherException {
     byte[] priKey = walletApiWrapper.backupWallet();
     if (!ArrayUtils.isEmpty(priKey)) {
@@ -502,6 +508,7 @@ public class Client {
     StringUtils.clear(priKey);
   }
 
+  // 备份钱包的私钥并将其转换为Base64格式
   private void backupWallet2Base64() throws IOException, CipherException {
     byte[] priKey = walletApiWrapper.backupWallet();
 
@@ -518,6 +525,10 @@ public class Client {
     }
   }
 
+  // 获取钱包地址
+  // 1. 获取钱包地址。
+  // 2. 检查获取结果是否有效。
+  // 3. 根据获取结果打印相应的成功或失败消息。
   private void getAddress() {
     String address = walletApiWrapper.getAddress();
     if (address != null) {
@@ -528,6 +539,7 @@ public class Client {
     }
   }
 
+  // 获取账户余额
   private void getBalance(String[] parameters) {
     Account account;
     if (ArrayUtils.isEmpty(parameters)) {
@@ -552,6 +564,10 @@ public class Client {
     }
   }
 
+  // 查询账户
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码提供的地址，并验证其有效性。
+  // 3. 查询账户信息，并根据查询结果打印相应的成功或失败消息。
   private void getAccount(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("GetAccount needs 1 parameter like the following: ");
@@ -588,6 +604,7 @@ public class Client {
     }
   }
 
+  // 更新用户账户的名称
   private void updateAccount(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -616,6 +633,7 @@ public class Client {
     }
   }
 
+  // 设置账户ID
   private void setAccountId(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -644,6 +662,7 @@ public class Client {
     }
   }
 
+  // 更新资产信息
   private void updateAsset(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 4 && parameters.length != 5)) {
@@ -680,6 +699,11 @@ public class Client {
     }
   }
 
+  // 获取资产发行信息
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 将提供的地址参数从Base58格式解码为字节数组。
+  // 3. 如果地址有效，调用API根据地址获取资产发行信息。
+  // 4. 如果成功获取到资产发行信息，则格式化并打印；如果失败，则打印失败消息。
   private void getAssetIssueByAccount(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("GetAssetIssueByAccount needs 1 parameter like following: ");
@@ -701,6 +725,10 @@ public class Client {
     }
   }
 
+  // 查询账户带宽
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码提供的地址，并验证其有效性。
+  // 3. 查询账户的带宽信息，并根据查询结果打印相应的成功或失败消息。
   private void getAccountNet(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("GetAccountNet needs 1 parameter like following: ");
@@ -721,6 +749,10 @@ public class Client {
     }
   }
 
+  // 查询账户资源
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码提供的地址，并验证其有效性。
+  // 3. 查询账户的资源信息，并根据查询结果打印相应的成功或失败消息。
   private void getAccountResource(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("getAccountResource needs 1 parameter like following: ");
@@ -744,6 +776,7 @@ public class Client {
   // In 3.2 version, this function will return null if there are two or more asset with the same token name,
   // so please use getAssetIssueById or getAssetIssueListByName.
   // This function just remains for compatibility.
+  // 资产名称获取资产发行信息
   private void getAssetIssueByName(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("GetAssetIssueByName needs 1 parameter like following: ");
@@ -760,6 +793,7 @@ public class Client {
     }
   }
 
+  // 资产名称获取资产发行列表
   private void getAssetIssueListByName(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("getAssetIssueListByName needs 1 parameter like following: ");
@@ -777,6 +811,7 @@ public class Client {
     }
   }
 
+  // 资产ID获取资产发行信息
   private void getAssetIssueById(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("getAssetIssueById needs 1 parameter like following: ");
@@ -793,6 +828,7 @@ public class Client {
     }
   }
 
+  // 发送代币(转账)
   private void sendCoin(String[] parameters) throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 2 && parameters.length != 3)) {
       System.out.println("SendCoin needs 2 parameters like following: ");
@@ -828,6 +864,7 @@ public class Client {
     }
   }
 
+  // 执行资产转移操作
   private void transferAsset(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 3 && parameters.length != 4)) {
@@ -864,6 +901,7 @@ public class Client {
     }
   }
 
+  // 参与资产发行
   private void participateAssetIssue(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 3 && parameters.length != 4)) {
@@ -904,6 +942,11 @@ public class Client {
     }
   }
 
+  // 处理资产发行的请求。
+  // 1. 首先验证输入参数的有效性，
+  // 2. 提取和转换参数，
+  // 3. 创建资产发行请求，
+  // 4. 根据结果打印相应的信息。
   private void assetIssue(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length < 12) {
@@ -971,6 +1014,11 @@ public class Client {
     }
   }
 
+  // 创建一个账户
+  // 1. 检查用户输入的参数是否符合要求；
+  // 2. 解码合约所有者地址和目标地址，确保它们有效；
+  // 3. 调用API创建账户
+  // 4. 根据操作结果打印相应的成功或失败消息。
   private void createAccount(String[] parameters)
       throws CipherException, IOException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -1003,6 +1051,11 @@ public class Client {
     }
   }
 
+  // 创建见证者
+  // 1. 检查用户输入的参数是否符合要求；
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性；接着获取URL参数；
+  // 3. 调用API创建见证者，
+  // 4. 根据操作结果打印相应的成功或失败消息。
   private void createWitness(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -1031,6 +1084,7 @@ public class Client {
     }
   }
 
+  // 更新见证人信息
   private void updateWitness(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -1058,6 +1112,7 @@ public class Client {
     }
   }
 
+  // 获取见证人列表
   private void listWitnesses() {
     Optional<WitnessList> result = walletApiWrapper.listWitnesses();
     if (result.isPresent()) {
@@ -1068,6 +1123,7 @@ public class Client {
     }
   }
 
+  // 获取资产发行列表
   private void getAssetIssueList() {
     Optional<AssetIssueList> result = walletApiWrapper.getAssetIssueList();
     if (result.isPresent()) {
@@ -1078,6 +1134,7 @@ public class Client {
     }
   }
 
+  // 获取分页的资产发行列表
   private void getAssetIssueList(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out.println("ListAssetIssuePaginated needs 2 parameters using the following syntax: ");
@@ -1112,6 +1169,7 @@ public class Client {
     }
   }
 
+  // 获取分页的交易列表
   private void getExchangesListPaginated(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out
@@ -1130,6 +1188,7 @@ public class Client {
     }
   }
 
+  // 列出节点信息
   private void listNodes() {
     Optional<NodeList> result = walletApiWrapper.listNodes();
     if (result.isPresent()) {
@@ -1145,6 +1204,7 @@ public class Client {
     }
   }
 
+  // 获取区块信息
   private void getBlock(String[] parameters) {
     long blockNum = -1;
 
@@ -1178,6 +1238,7 @@ public class Client {
     }
   }
 
+  // 获取区块中的交易数量
   private void getTransactionCountByBlockNum(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Use GetTransactionCountByBlockNum command with below syntax");
@@ -1190,6 +1251,7 @@ public class Client {
     System.out.println("The block contains " + count + " transactions");
   }
 
+  // 给见证人投票
   private void voteWitness(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length < 2) {
@@ -1232,6 +1294,10 @@ public class Client {
     return ownerAddress;
   }
 
+  // 冻结用户余额
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解析合约所有者地址（如果提供），冻结余额、冻结时间、资源代码和接收地址。
+  // 3. 调用API冻结余额，并根据操作结果打印相应的成功或失败消息。
   private void freezeBalance(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || !(parameters.length == 2 || parameters.length == 3
@@ -1276,6 +1342,10 @@ public class Client {
     }
   }
 
+  // 冻结用户的余额v2
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解析合约所有者地址、冻结余额和资源代码。
+  // 3. 调用API冻结余额，并根据操作结果打印相应的成功或失败消息。
   private void freezeBalanceV2(String[] parameters)
           throws IOException, CipherException, CancelException {
     if (parameters == null || !(parameters.length == 2 || parameters.length == 3)) {
@@ -1315,6 +1385,7 @@ public class Client {
     }
   }
 
+  // 解冻用户余额
   private void unfreezeBalance(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length < 1 || parameters.length > 3) {
@@ -1390,6 +1461,7 @@ public class Client {
     }
   }
 
+  // 提现解冻到期的冻结余额
   private void withdrawExpireUnfreeze(String[] parameters)
           throws IOException, CipherException, CancelException {
     if (parameters == null || !(parameters.length == 0 || parameters.length == 1)) {
@@ -1417,6 +1489,10 @@ public class Client {
     }
   }
 
+  // 委托资源
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 根据参数的数量解析合约所有者地址、余额、资源代码、接收者地址、锁定状态和锁定期限。
+  // 3. 调用API进行资源委托，并根据操作结果打印相应的成功或失败消息。
   private void delegateResource(String[] parameters)
           throws IOException, CipherException, CancelException {
     if (parameters == null || !(parameters.length == 3 || parameters.length == 4 || parameters.length == 5 || parameters.length == 6)) {
@@ -1476,6 +1552,7 @@ public class Client {
     }
   }
 
+  // 撤销资源委托
   private void unDelegateResource(String[] parameters)
           throws IOException, CipherException, CancelException {
     if (parameters == null || !(parameters.length == 3 || parameters.length == 4)) {
@@ -1524,6 +1601,10 @@ public class Client {
     }
   }
 
+  // 取消所有的解冻操作
+  // 1. 检查用户输入的参数是否符合要求，
+  //      如果不符合则打印使用说明并返回；
+  //      如果符合要求，则调用API取消所有解冻操作，并根据操作结果打印相应的成功或失败消息。
   private void cancelAllUnfreezeV2(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters.length > 0) {
@@ -1539,6 +1620,7 @@ public class Client {
     }
   }
 
+  // 获取带宽价格
   private void getBandwidthPrices(String[] parameters) {
     if (parameters.length > 0) {
       System.out.println("Use GetBandwidthPrices command with below syntax: ");
@@ -1549,6 +1631,7 @@ public class Client {
     System.out.println("The BandwidthPrices is " + result.getPrices());
   }
 
+  // 获取能量价格
   private void getEnergyPrices(String[] parameters) {
     if (parameters.length > 0) {
       System.out.println("Use GetEnergyPrices command with below syntax: ");
@@ -1559,6 +1642,7 @@ public class Client {
     System.out.println("The EnergyPrices is "+ result.getPrices());
   }
 
+  // 获取备忘录费用
   private void getMemoFee(String[] parameters) {
     if (parameters.length > 0) {
       System.out.println("Use GetMemoFee command with below syntax: ");
@@ -1569,6 +1653,7 @@ public class Client {
     System.out.println("The MemoFee is " + result.getPrices());
   }
 
+  // 解冻资产
   private void unfreezeAsset(String[] parameters) throws IOException,
       CipherException, CancelException {
     System.out.println("Use UnfreezeAsset command like: ");
@@ -1591,6 +1676,12 @@ public class Client {
     }
   }
 
+  // 创建提案
+  // 1. 检查用户输入的参数是否符合要求；
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性；
+  // 3. 将参数ID和对应值存入映射关系中；
+  // 4. 调用API创建提案
+  // 5. 根据操作结果打印相应的成功或失败消息。
   private void createProposal(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length < 2) {
@@ -1623,6 +1714,7 @@ public class Client {
     }
   }
 
+  // 批准一个提案
   private void approveProposal(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 2 && parameters.length != 3)) {
@@ -1651,6 +1743,11 @@ public class Client {
     }
   }
 
+  // 删除提案
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性。
+  // 3. 获取提案ID。
+  // 4. 调用API删除提案，并根据操作结果打印相应的成功或失败消息。
   private void deleteProposal(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -1677,7 +1774,7 @@ public class Client {
       System.out.println("DeleteProposal failed !!!");
     }
   }
-
+  // 获取提案列表
   private void listProposals() {
     Optional<ProposalList> result = walletApiWrapper.getProposalsList();
     if (result.isPresent()) {
@@ -1687,7 +1784,7 @@ public class Client {
       System.out.println("List witnesses failed !!!");
     }
   }
-
+  // 根据ID获取提案
   private void getProposal(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getProposal command needs 1 parameter like: ");
@@ -1705,7 +1802,7 @@ public class Client {
     }
   }
 
-
+  // 获取委托的资源信息
   private void getDelegatedResource(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out.println("Using getDelegatedResource command needs 2 parameters like: ");
@@ -1723,6 +1820,7 @@ public class Client {
     }
   }
 
+  // 获取委托资源的账户索引
   private void getDelegatedResourceAccountIndex(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getDelegatedResourceAccountIndex command needs 1 parameters like: ");
@@ -1739,6 +1837,7 @@ public class Client {
     }
   }
 
+  // 获取委托的资源信息v2
   private void getDelegatedResourceV2(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out.println("Using getdelegatedresourcev2 command needs 2 parameters like: ");
@@ -1755,7 +1854,7 @@ public class Client {
       System.out.println("GetDelegatedResourceV2 failed !!!");
     }
   }
-
+  // 获取委托资源的账户索引v2
   private void getDelegatedResourceAccountIndexV2(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getDelegatedResourceAccountIndexV2 command needs 1 parameters like: ");
@@ -1777,6 +1876,7 @@ public class Client {
     System.out.println("getcanwithdrawunfreezeamount ownerAddress timestamp");
   }
 
+  // 可以提取的解冻金额
   private void getCanWithdrawUnfreezeAmount(String[] parameters) throws CipherException, IOException, CancelException {
     if (parameters == null || !(parameters.length == 1 || parameters.length == 2)) {
       this.outputGetCanWithdrawUnfreezeAmountTip();
@@ -1838,6 +1938,7 @@ public class Client {
     System.out.println("getcandelegatedmaxsize ownerAddress type");
   }
 
+  // 获取可以委托的最大资源
   private void getCanDelegatedMaxSize(String[] parameters) throws CipherException, IOException, CancelException {
     if (parameters == null || !(parameters.length == 1 || parameters.length == 2)) {
       this.outputGetCanDelegatedMaxSizeTip();
@@ -1897,6 +1998,7 @@ public class Client {
     System.out.println("getavailableunfreezecount owner_address ");
   }
 
+  // 可解冻资源的次数
   private void getAvailableUnfreezeCount(String[] parameters) throws CipherException, IOException, CancelException {
     if (parameters == null || !(parameters.length == 0 || parameters.length == 1)) {
       this.outputGetAvailableUnfreezeCountTip();
@@ -1927,6 +2029,11 @@ public class Client {
     }
   }
 
+  // 创建代币交换
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性。
+  // 3. 获取第一种代币ID和余额、第二种代币ID和余额。
+  // 4. 调用API创建代币交换，并根据操作结果打印相应的成功或失败消息。
   private void exchangeCreate(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 4 && parameters.length != 5)) {
@@ -1959,6 +2066,11 @@ public class Client {
     }
   }
 
+  // 代币交换中注入代币
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性。
+  // 3. 获取交换ID、代币ID和数量。
+  // 4. 调用API向代币交换中注入代币，并根据操作结果打印相应的成功或失败消息。
   private void exchangeInject(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 3 && parameters.length != 4)) {
@@ -1988,6 +2100,11 @@ public class Client {
     }
   }
 
+  // 代币交换中提取代币
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性。
+  // 3. 获取交换ID、代币ID和数量。
+  // 4. 调用API从代币交换中提取代币，并根据操作结果打印相应的成功或失败消息。
   private void exchangeWithdraw(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 3 && parameters.length != 4)) {
@@ -2017,6 +2134,11 @@ public class Client {
     }
   }
 
+  // 执行代币交换交易
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解码合约所有者地址（如果提供），并验证其有效性。
+  // 3. 获取交换ID、代币ID、数量和预期值。
+  // 4. 调用API执行代币交换交易，并根据操作结果打印相应的成功或失败消息。
   private void exchangeTransaction(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 4 && parameters.length != 5)) {
@@ -2049,6 +2171,7 @@ public class Client {
     }
   }
 
+  // 列出可用的交易信息
   private void listExchanges() {
     Optional<ExchangeList> result = walletApiWrapper.getExchangeList();
     if (result.isPresent()) {
@@ -2059,6 +2182,7 @@ public class Client {
     }
   }
 
+  // 获取指定ID的交易信息
   private void getExchange(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getExchange command needs 1 parameter like: ");
@@ -2076,6 +2200,7 @@ public class Client {
     }
   }
 
+  // 提取用户余额
   private void withdrawBalance(String[] parameters)
       throws IOException, CipherException, CancelException {
     System.out.println("Using withdrawBalance command like: ");
@@ -2097,11 +2222,13 @@ public class Client {
     }
   }
 
+  // 获取总交易数量
   private void getTotalTransaction() {
     NumberMessage totalTransition = walletApiWrapper.getTotalTransaction();
     System.out.println("The number of total transactions is : " + totalTransition.getNum());
   }
 
+  // 获取下一个维护期时间
   private void getNextMaintenanceTime() {
     NumberMessage nextMaintenanceTime = walletApiWrapper.getNextMaintenanceTime();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -2109,6 +2236,7 @@ public class Client {
     System.out.println("Next maintenance time is : " + date);
   }
 
+  // 根据交易ID获取交易信息
   private void getTransactionById(String[] parameters) {
     String txid = "";
     if (parameters == null || parameters.length != 1) {
@@ -2126,6 +2254,7 @@ public class Client {
     }
   }
 
+  // 根据交易ID获取交易信息
   private void getTransactionInfoById(String[] parameters) {
     String txid = "";
     if (parameters == null || parameters.length != 1) {
@@ -2143,6 +2272,7 @@ public class Client {
     }
   }
 
+  // 从指定地址获取交易记录
   private void getTransactionsFromThis(String[] parameters) {
     if (parameters == null || parameters.length != 3) {
       System.out.println("Using getTransactionsFromThis command needs 3 parameters like: ");
@@ -2185,7 +2315,7 @@ public class Client {
       }
     }
   }
-
+  // 从指定地址获取收到的交易记录
   private void getTransactionsToThis(String[] parameters) {
     if (parameters == null || parameters.length != 3) {
       System.out.println("Using getTransactionsToThis needs 3 parameters like: ");
@@ -2245,6 +2375,7 @@ public class Client {
 //    logger.info("the number of Transactions to account " + address + " is " + result);
 //  }
 
+  // 区块ID获取区块信息
   private void getBlockById(String[] parameters) {
     String blockID = "";
     if (parameters == null || parameters.length != 1) {
@@ -2262,6 +2393,7 @@ public class Client {
     }
   }
 
+  // 起始和结束块编号获取区块信息
   private void getBlockByLimitNext(String[] parameters) {
     long start = 0;
     long end = 0;
@@ -2294,6 +2426,7 @@ public class Client {
     }
   }
 
+  // 块编号获取最新的区块信息
   private void getBlockByLatestNum(String[] parameters) {
     long num = 0;
     if (parameters == null || parameters.length != 1) {
@@ -2329,6 +2462,7 @@ public class Client {
     }
   }
 
+  // 更新合约的设置
   private void updateSetting(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 2 && parameters.length != 3)) {
@@ -2367,6 +2501,7 @@ public class Client {
     }
   }
 
+  // 更新合约的能量限制
   private void updateEnergyLimit(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 2 && parameters.length != 3)) {
@@ -2405,6 +2540,11 @@ public class Client {
     }
   }
 
+  // 清除合约的ABI
+  // 1. 检查用户输入的参数是否符合要求
+  // 2. 接着解码合约所有者地址和合约地址
+  // 3. 调用API清除合约的ABI
+  // 4. 根据操作结果打印相应的成功或失败消息。
   private void clearContractABI(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || (parameters.length != 1 && parameters.length != 2)) {
@@ -2436,6 +2576,7 @@ public class Client {
     }
   }
 
+  // 更新用户佣金
   private void updateBrokerage(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length != 2) {
@@ -2466,6 +2607,7 @@ public class Client {
     }
   }
 
+  // 获取用户奖励
   private void getReward(String[] parameters) {
     int index = 0;
     byte[] ownerAddress = null;
@@ -2484,6 +2626,7 @@ public class Client {
     System.out.println("The reward is : " + reward.getNum());
   }
 
+  // 获取佣金
   private void getBrokerage(String[] parameters) {
     int index = 0;
     byte[] ownerAddress = null;
@@ -2502,6 +2645,7 @@ public class Client {
     System.out.println("The brokerage is : " + brokerage.getNum());
   }
 
+  // 获取该区块中的交易信息
   private void getTransactionInfoByBlockNum(String[] parameters) {
     if (parameters.length != 1) {
       System.out.println("You need input number with the following syntax:");
@@ -2555,7 +2699,10 @@ public class Client {
     }
 
   }
-
+  // 部署智能合约
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解析并验证各个参数，包括合约所有者地址、合约名称、ABI、字节码、构造函数、参数、费用限制等。
+  // 3. 调用API部署合约，并根据操作结果打印相应的成功或失败消息。
   private void deployContract(String[] parameter)
       throws IOException, CipherException, CancelException {
 
@@ -2737,6 +2884,7 @@ public class Client {
     }
   }
 
+  // 触发常量合约的调用
   private void triggerConstantContract(String[] parameters)
       throws IOException, CipherException, CancelException {
 
@@ -2795,6 +2943,10 @@ public class Client {
         ownerAddress, contractAddress, callValue, input, 0, tokenValue, tokenId, true);
   }
 
+  // 预估调用合约需能量
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 解析合约所有者地址、合约地址、方法名、参数、调用值、代币价值和代币ID。
+  // 3. 调用API估算在调用合约方法时所需的能量。
   private void estimateEnergy(String[] parameters)
       throws IOException, CipherException, CancelException  {
 
@@ -2854,6 +3006,7 @@ public class Client {
         ownerAddress, contractAddress, callValue, input, tokenValue, tokenId);
   }
 
+  // 获取智能合约的信息
   private void getContract(String[] parameters) {
     if (parameters == null ||
         parameters.length != 1) {
@@ -2876,6 +3029,7 @@ public class Client {
     }
   }
 
+  // 获取智能合约的详细信息
   private void getContractInfo(String[] parameters) {
     if (parameters == null ||
         parameters.length != 1) {
@@ -2898,6 +3052,13 @@ public class Client {
     }
   }
 
+  // 生成地址和私钥
+  // 1. 检查输入参数以确定密钥类型（ECKey或其他）。
+  // 2. 使用随机数生成器创建一个加密引擎实例。
+  // 3. 生成私钥和地址。
+  // 4. 将私钥和地址转换为字符串格式。
+  // 5. 构建并打印包含地址和私钥的消息。
+  // 6. 如果在过程中发生任何异常，则打印错误消息。
   private void generateAddress(String[] parameters) {
     try {
       boolean isECKey  = parameters == null || parameters.length == 0
@@ -2916,6 +3077,7 @@ public class Client {
     }
   }
 
+  // 更新账户的权限
   private void updateAccountPermission(String[] parameters)
       throws CipherException, IOException, CancelException {
     if (parameters == null || parameters.length != 2) {
@@ -2939,6 +3101,7 @@ public class Client {
   }
 
 
+  // 获取交易的签名权重
   private void getTransactionSignWeight(String[] parameters) throws InvalidProtocolBufferException {
     if (parameters == null || parameters.length != 1) {
       System.out.println(
@@ -2957,6 +3120,7 @@ public class Client {
     }
   }
 
+  // 获取交易的批准列表
   private void getTransactionApprovedList(String[] parameters)
       throws InvalidProtocolBufferException {
     if (parameters == null || parameters.length != 1) {
@@ -2977,6 +3141,7 @@ public class Client {
     }
   }
 
+  // 对输入的交易字符串进行签名
   private void addTransactionSign(String[] parameters)
       throws CipherException, IOException, CancelException {
     if (parameters == null || parameters.length != 1) {
@@ -3003,6 +3168,11 @@ public class Client {
 
   }
 
+  // 广播交易
+  // 1. 检查参数是否有效，解析交易信息，
+  // 2. 验证交易的有效性，
+  // 3. 调用API广播交易
+  // 4. 根据广播结果打印相应的成功或失败消息。
   private void broadcastTransaction(String[] parameters) throws InvalidProtocolBufferException {
     if (parameters == null || parameters.length != 1) {
       System.out.println(
@@ -3409,6 +3579,7 @@ public class Client {
     }
   }
 
+  // 生成有效的支出密钥
   private void getSpendingKey() {
     while (true) {
       byte[] skBytes = org.tron.keystore.Wallet.generateRandomBytes(32);
@@ -3423,6 +3594,7 @@ public class Client {
     }
   }
 
+  // 从支出密钥生成扩展支出密钥
   private void getExpandedSpendingKey(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getExpandedSpendingKey command needs 1 parameter like: ");
@@ -3444,6 +3616,11 @@ public class Client {
     }
   }
 
+  // 从给定的ASK（用于加密的密钥）中获取AK（授权密钥）
+  // 1. 检查用户输入的参数是否符合要求。
+  // 2. 将提供的ASK参数从十六进制字符串转换为字节数组。
+  // 3. 尝试从ASK中获取AK，并打印结果。
+  // 4. 如果在获取过程中发生异常，则打印失败消息。
   private void getAkFromAsk(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getAkFromAsk needs 1 parameter like: ");
@@ -3458,7 +3635,7 @@ public class Client {
       System.out.println("GetAkFromAsk failed !!!");
     }
   }
-
+  // 从 nsk 中获取 nk
   private void getNkFromNsk(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getNkFromNsk needs 1 parameter like: ");
@@ -3474,6 +3651,7 @@ public class Client {
     }
   }
 
+  // 计算并返回“入站查看密钥”（Incoming Viewing Key，IVK）
   private void getIncomingViewingKey(String[] parameters) {
     if (parameters == null || parameters.length != 2 || parameters[0].length() != 64
         || parameters[1].length() != 64) {
@@ -3493,6 +3671,7 @@ public class Client {
     }
   }
 
+  // 生成随机的“多样化器”（Diversifier）
   private void getDiversifier() {
     try {
       DiversifierT d = new DiversifierT().random();
@@ -3502,6 +3681,7 @@ public class Client {
     }
   }
 
+  // 生成一个隐私支付地址
   private void getShieldedPaymentAddress(String[] parameters) {
     if (parameters == null || parameters.length != 2 || parameters[1].length() != 22) {
       System.out.println("Using getShieldedPaymentAddress command needs 2 parameters like: ");
@@ -3559,6 +3739,7 @@ public class Client {
     }
   }
 
+  // 市场资产出售
   private void marketSellAsset(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length != 5) {
@@ -3590,7 +3771,7 @@ public class Client {
     }
   }
 
-
+  // 取消市场订单。
   private void marketCancelOrder(String[] parameters)
       throws IOException, CipherException, CancelException {
     if (parameters == null || parameters.length != 2) {
@@ -3618,7 +3799,7 @@ public class Client {
     }
   }
 
-
+  // 根据账户获取市场订单
   private void getMarketOrderByAccount(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using GetMarketOrderByAccount command needs 1 parameters like: ");
@@ -3643,6 +3824,7 @@ public class Client {
     }
   }
 
+  // 根据交易对获取市场价格
   private void getMarketPriceByPair(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out.println("Using GetMarketPriceByPair command needs 2 parameters like: ");
@@ -3664,7 +3846,7 @@ public class Client {
     }
   }
 
-
+  // 根据给定的代币对获取市场订单列表
   private void getMarketOrderListByPair(String[] parameters) {
     if (parameters == null || parameters.length != 2) {
       System.out.println("Using getMarketOrderListByPair command needs 2 parameters like: ");
@@ -3686,7 +3868,7 @@ public class Client {
     }
   }
 
-
+  // 获取市场交易对列表
   private void getMarketPairList(String[] parameters) {
     if (parameters == null || parameters.length != 0) {
       System.out.println("Using getMarketPairList command does not need any parameters, like: ");
@@ -3704,6 +3886,7 @@ public class Client {
     }
   }
 
+  // 根据订单ID获取市场订单
   private void getMarketOrderById(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using getMarketOrderById command needs 1 parameters like:");
@@ -3723,6 +3906,10 @@ public class Client {
   }
 
 
+  // 1. 检查用户输入的参数是否符合要求；
+  // 2. 解码地址并验证其有效性；
+  // 3. 解码代码和盐值，确保盐值有效；
+  // 4. 生成新的地址并打印出来。
   private void create2(String[] parameters) {
     if (parameters == null || parameters.length != 3) {
       System.out.println("Using create2 command needs 3 parameters like: ");
@@ -3753,6 +3940,7 @@ public class Client {
     return;
   }
 
+  // 设置有隐私保护的TRC20合约地址
   private void setShieldedTRC20ContractAddress(String[] parameters) {
     if (parameters.length == 2) {
       byte[] trc20ContractAddress = WalletApi.decodeFromBase58Check(parameters[0]);
@@ -3780,6 +3968,10 @@ public class Client {
     }
   }
 
+  // 备份保护的 TRC20 钱包。
+  // 1. 检查是否设置了钱包路径
+  //    如果没有设置，则提示用户并提前返回。
+  //    如果路径设置正确，程序尝试备份钱包并根据返回结果打印相应的成功或失败信息。
   private void backupShieldedTRC20Wallet() throws IOException, CipherException {
     if (!ShieldedTRC20Wrapper.isSetShieldedTRC20WalletPath()) {
       System.out.println("BackupShieldedTRC20Wallet failed !!!"
@@ -3798,6 +3990,12 @@ public class Client {
     }
   }
 
+  // 生成保护的TRC20地址
+  // 1. 检查是否设置了保护的TRC20钱包路径。
+  // 2. 解析输入参数以确定要生成的地址数量。
+  // 3. 初始化保护的TRC20钱包文件。
+  // 4. 生成指定数量的保护TRC20地址，并将其添加到钱包中。
+  // 5. 打印生成的保护地址。
   private void generateShieldedTRC20Address(String[] parameters) throws IOException,
       CipherException, ZksnarkException {
     if (!ShieldedTRC20Wrapper.isSetShieldedTRC20WalletPath()) {
@@ -3834,6 +4032,7 @@ public class Client {
     }
   }
 
+  // 导入受保护的TRC20钱包
   private void importShieldedTRC20Wallet() throws CipherException, IOException, ZksnarkException {
     if (!ShieldedTRC20Wrapper.isSetShieldedTRC20WalletPath()) {
       System.out.println("ImportShieldedTRC20Wallet failed !!!"
@@ -3862,6 +4061,7 @@ public class Client {
     }
   }
 
+  // 列出受保护的TRC20地址
   private void listShieldedTRC20Address() {
     if (!ShieldedTRC20Wrapper.getInstance().ifShieldedTRC20WalletLoaded()) {
       System.out.println("ListShieldedTRC20Address failed, please LoadShieldedTRC20Wallet " +
@@ -3952,6 +4152,7 @@ public class Client {
         + "multiple of " + scalingFactor.toString());
   }
 
+  // 加载保护的TRC20钱包
   private void loadShieldedTRC20Wallet() throws CipherException, IOException {
     if (ShieldedTRC20Wrapper.isSetShieldedTRC20WalletPath()) {
       boolean result = ShieldedTRC20Wrapper.getInstance().loadShieldTRC20Wallet();
@@ -3966,6 +4167,7 @@ public class Client {
     }
   }
 
+  // 重置保护的TRC20代币
   private void resetShieldedTRC20Note() {
     if (!ShieldedTRC20Wrapper.getInstance().ifShieldedTRC20WalletLoaded()) {
       System.out.println("ResetShieldedTRC20Note failed, please LoadShieldedTRC20Wallet first!");
@@ -3976,6 +4178,7 @@ public class Client {
     }
   }
 
+  // 扫描保护的TRC20代币记录
   private void scanShieldedTRC20NoteByIvk(String[] parameters) {
     if (parameters == null || parameters.length < 6) {
       System.out.println("ScanShieldedTRC20NoteByIvk command needs at least 6 parameters like: ");
@@ -4017,6 +4220,7 @@ public class Client {
     }
   }
 
+  // 扫描保护的TRC20代币记录
   private void scanShieldedTRC20NoteByOvk(String[] parameters) {
     if (parameters == null || parameters.length < 4) {
       System.out.println("ScanShieldedTRC20NoteByOvk command needs at lease 4 parameters like: ");
@@ -4053,6 +4257,7 @@ public class Client {
     }
   }
 
+  // 发送隐私保护的TRC20代币
   private void sendShieldedTRC20Coin(String[] parameters) throws IOException, CipherException,
       CancelException, ZksnarkException {
     if (firstCheck(parameters, "SendShieldedTRC20Coin")) {
@@ -4070,6 +4275,7 @@ public class Client {
     }
   }
 
+  // 发送隐私保护的TRC20代币(无需用户确认)
   private void sendShieldedTRC20CoinWithoutAsk(String[] parameters) throws IOException,
       CipherException, CancelException, ZksnarkException {
     if (firstCheck(parameters, "SendShieldedTRC20CoinWithoutAsk")) {
@@ -4286,6 +4492,7 @@ public class Client {
     return true;
   }
 
+  // 显示隐私保护的TRC20地址信息
   private void showShieldedTRC20AddressInfo(String[] parameters) {
     if (parameters == null || parameters.length != 1) {
       System.out.println("Using ShowShieldedTRC20AddressInfo needs 1 parameter like: ");
@@ -5023,6 +5230,7 @@ public class Client {
     }
   }
 
+  // 获取链参数
   private void getChainParameters() {
     Optional<ChainParameters> result = walletApiWrapper.getChainParameters();
     if (result.isPresent()) {
@@ -5041,6 +5249,7 @@ public class Client {
     return null;
   }
 
+  // 区块ID或区块编号获取区块信息
   private void getBlockByIdOrNum(String[] parameters) {
     String idOrNum = null;
     boolean detail = false;

@@ -143,6 +143,7 @@ public class WalletApiWrapper {
 
 
   //password is current, will be enc by password2.
+  // 备份钱包的私钥
   public byte[] backupWallet() throws IOException, CipherException {
     if (wallet == null || !wallet.isLoginState()) {
       wallet = WalletApi.loadWalletFromKeystore();

@@ -74,6 +74,7 @@ import org.tron.common.crypto.jce.TronCastleProvider;
 import org.tron.common.utils.BIUtil;
 import org.tron.common.utils.ByteUtil;
 import org.tron.common.utils.Hash;
+import org.tron.walletserver.WalletApi;
 
 @Slf4j(topic = "crypto")
 public class ECKey implements Serializable, SignInterface {
@@ -300,6 +301,7 @@ public class ECKey implements Serializable, SignInterface {
   public static ECKey fromPrivate(byte[] privKeyBytes) {
     return fromPrivate(new BigInteger(1, privKeyBytes));
   }
+
   /**
    * Creates an ECKey that simply trusts the caller to ensure that point is really the result of
    * multiplying the generator point by the private key. This is used to speed things up when you

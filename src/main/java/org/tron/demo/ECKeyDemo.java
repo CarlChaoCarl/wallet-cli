@@ -80,13 +80,13 @@ public class ECKeyDemo {
   }
 
   public static void main(String[] args) throws CipherException {
-    String privateKey = "F43EBCC94E6C257EDBE559183D1A8778B2D5A08040902C0F0A77A3343A1D0EA5";
+    String privateKey = "8cbeddf1b133d3ba1b63adb17b767a3874ab34cc595a1253cdf41abbbcad0e16";
     String address = private2Address(ByteArray.fromHexString(privateKey));
     System.out.println("base58Address: " + address);
 
     System.out.println("================================================================\r\n");
 
-    address = private2Address(null);
-    System.out.println("base58Address: " + address);
+    //address = private2Address(null);
+    //System.out.println("base58Address: " + address);
   }
 }

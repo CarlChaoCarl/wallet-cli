@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -318,7 +319,6 @@ public class Test {
   }
 
   public static void main(String[] args) throws Exception {
-
     testPasswordStrength();
   }
 }

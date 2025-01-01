@@ -1635,6 +1635,12 @@ public class WalletApi {
     return builder.build();
   }
 
+  // 批准一个提案。
+  // 1. 它首先检查所有者地址是否为  null ，如果是，则获取当前用户的地址。
+  // 2. 然后创建提案批准合约，
+  // 3. 发送批准请求，
+  // 4. 处理返回的交易信息
+  // 5. 最后返回批准的结果。
   public boolean approveProposal(byte[] owner, long id,
       boolean is_add_approval)
       throws CipherException, IOException, CancelException {
@@ -2436,6 +2442,7 @@ public class WalletApi {
     return builder.build();
   }
 
+  // 为给定的交易对象添加签名
   public Transaction addTransactionSign(Transaction transaction)
       throws CipherException, IOException, CancelException {
     if (transaction.getRawData().getTimestamp() == 0) {
@@ -2962,4 +2969,9 @@ public class WalletApi {
     return rpcCli.getBlock(idOrNum, detail);
   }
 
+  public static void main(String[] args) {
+    String addr = encode58Check(Hex.decode("4180ef5ce0b9643a9324a9f6207fdf63217232f0"));
+
+    System.out.println("address:" + addr);
+  }
 }
