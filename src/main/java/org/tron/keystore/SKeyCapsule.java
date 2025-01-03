@@ -267,6 +267,10 @@ public class SKeyCapsule {
     }
 
     public static class Aes128CtrKdfParams implements KdfParams {
+        //   -  dklen ：表示密钥的长度。
+        //   -  c ：表示循环次数。
+        //   -  prf ：表示伪随机函数（Pseudo-Random Function）。
+        //   -  salt ：表示盐值，用于增加加密的安全性。
         private int dklen;
         private int c;
         private String prf;
