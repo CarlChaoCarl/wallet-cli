@@ -189,6 +189,8 @@ public class Client {
       "MarketSellAsset",
       "ParticipateAssetIssue",
       "RegisterWallet",
+      "GenerateSubAccount",
+      "GenerateSubAccountCustom",
       // "ResetShieldedNote",
       "ResetShieldedTRC20Note",
       // "ScanAndMarkNotebyAddress",
@@ -337,6 +339,8 @@ public class Client {
       "MarketSellAsset",
       "ParticipateAssetIssue",
       "RegisterWallet",
+      "GenerateSubAccount",
+      "GenerateSubAccountCustom",
       // "ResetShieldedNote",
       "ResetShieldedTRC20Note",
       // "ScanAndMarkNotebyAddress",
@@ -534,6 +538,24 @@ public class Client {
       return;
     }
     System.out.println("Register a wallet successful, keystore file name is " + fileName);
+  }
+
+  private void generateSubAccount() throws CipherException, IOException {
+    boolean ret = walletApiWrapper.generateSubAccount();
+    if (ret) {
+      System.out.println("generateSubAccount successful.");
+    } else {
+      System.out.println("generateSubAccount failed.");
+    }
+  }
+
+  private void generateSubAccountCustom() throws CipherException, IOException {
+    boolean ret = walletApiWrapper.generateSubAccountCustom();
+    if (ret) {
+      System.out.println("generateSubAccountCustom successful.");
+    } else {
+      System.out.println("generateSubAccountCustom failed.");
+    }
   }
 
   private void importWallet() throws CipherException, IOException {
@@ -4584,6 +4606,14 @@ public class Client {
             }
             case "registerwallet": {
               registerWallet();
+              break;
+            }
+            case "generatesubaccount": {
+              generateSubAccount();
+              break;
+            }
+            case "generatesubaccountcustom": {
+              generateSubAccountCustom();
               break;
             }
             case "importwallet": {
