@@ -190,7 +190,7 @@ public class SubAccount {
           i + 1,
           addresses.get(i).getDisplayString()));
     }
-    asb.append("Commands: [P] Previous page [N] Next page [S] Select address (enter number) [Q] Quit Enter command: ");
+    asb.append("Commands: [P] Previous page [N] Next page [S] Select address (enter number) [C] Custom Path [Q] Quit Enter command: ");
 
     terminal.writer().print(asb.toAnsi());
     terminal.flush();
@@ -258,6 +258,9 @@ public class SubAccount {
           break;
         case "S":
           handleSelectAddress();
+          break;
+        case "C":
+          generateByCustomPath();
           break;
         case "Q":
           return;

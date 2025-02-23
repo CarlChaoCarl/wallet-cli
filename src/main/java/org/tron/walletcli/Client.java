@@ -190,7 +190,6 @@ public class Client {
       "ParticipateAssetIssue",
       "RegisterWallet",
       "GenerateSubAccount",
-      "GenerateSubAccountCustom",
       // "ResetShieldedNote",
       "ResetShieldedTRC20Note",
       // "ScanAndMarkNotebyAddress",
@@ -340,7 +339,6 @@ public class Client {
       "ParticipateAssetIssue",
       "RegisterWallet",
       "GenerateSubAccount",
-      "GenerateSubAccountCustom",
       // "ResetShieldedNote",
       "ResetShieldedTRC20Note",
       // "ScanAndMarkNotebyAddress",
@@ -546,15 +544,6 @@ public class Client {
       System.out.println("generateSubAccount successful.");
     } else {
       System.out.println("generateSubAccount failed.");
-    }
-  }
-
-  private void generateSubAccountCustom() throws CipherException, IOException {
-    boolean ret = walletApiWrapper.generateSubAccountCustom();
-    if (ret) {
-      System.out.println("generateSubAccountCustom successful.");
-    } else {
-      System.out.println("generateSubAccountCustom failed.");
     }
   }
 
@@ -4610,10 +4599,6 @@ public class Client {
             }
             case "generatesubaccount": {
               generateSubAccount();
-              break;
-            }
-            case "generatesubaccountcustom": {
-              generateSubAccountCustom();
               break;
             }
             case "importwallet": {

@@ -169,32 +169,6 @@ public class WalletApiWrapper {
     return true;
   }
 
-  public boolean generateSubAccountCustom() throws CipherException, IOException {
-    boolean result = false;
-    if (wallet == null || !wallet.isLoginState()) {
-      System.out.println("Warning: generatesubaccountcustom failed,  Please login first !!");
-      return false;
-    }
-
-    System.out.println("Please input your password.");
-    char[] password = Utils.inputPassword(false);
-    byte[] passwd = StringUtils.char2Byte(password);
-    wallet.checkPassword(passwd);
-
-    String ownerAddress = WalletApi.encode58Check(wallet.getAddress());
-    byte[] mnemonic = MnemonicUtils.exportMnemonic(passwd, ownerAddress);
-    try {
-      SubAccount.getInstance(passwd, new String(mnemonic)).generateByCustomPath();
-    } catch (Exception e) {
-      StringUtils.clear(password);
-      System.out.println("Warning: GenerateSubAccount failed, e :" + e.getMessage());
-      e.printStackTrace();
-      return false;
-    }
-    StringUtils.clear(password);
-    return true;
-  }
-
   //password is current, will be enc by password2.
   public byte[] backupWallet() throws IOException, CipherException {
     if (wallet == null || !wallet.isLoginState()) {
