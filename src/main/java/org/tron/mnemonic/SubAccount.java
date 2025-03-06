@@ -22,6 +22,9 @@ import org.tron.walletserver.WalletApi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 public class SubAccount {
   private static volatile SubAccount instance;
@@ -164,12 +167,12 @@ public class SubAccount {
     terminal.writer().flush();
   }
 
-  private void clearScreen() throws Exception {
+  private void clearScreen() {
     terminal.puts(InfoCmp.Capability.clear_screen);
     terminal.flush();
   }
 
-  private void displayCurrentPage() throws Exception {
+  private void displayCurrentPage() {
     clearScreen();
     AttributedStringBuilder asb = new AttributedStringBuilder();
     asb.append("\n\n=== Address List - Page ")
@@ -190,19 +193,21 @@ public class SubAccount {
           i + 1,
           addresses.get(i).getDisplayString()));
     }
-    asb.append("Commands: [P] Previous page [N] Next page [S] Select address (enter number) [C] Custom Path [Q] Quit Enter command: ");
+    asb.append("Commands: [P] Previous page " +
+        "[N] Next page " +
+        "["+ (start+1) + "-" + end+"] Select address index " +
+        "[Q] Quit\n");
+    asb.append("Enter your choice: ");
 
     terminal.writer().print(asb.toAnsi());
     terminal.flush();
   }
 
-  private void handleSelectAddress() throws Exception {
+  private boolean handleSelectAddress(int selectedIndex) throws Exception {
     int start = currentPage * pageSize;
     int end = Math.min(start + pageSize, addresses.size());
-    String input = reader.readLine("Enter address number (" +
-        (start + 1) + "-" + end + "): ");
     try {
-      int index = Integer.parseInt(input.trim()) - 1;
+      int index = selectedIndex - 1;
       if (index >= start && index < end) {
         WalletAddress selected = addresses.get(index);
         if (!selected.isGenerated()) {
@@ -213,7 +218,7 @@ public class SubAccount {
           String keystoreName = WalletApi.store2Keystore(walletFile);
           System.out.println("Generate a sub account successful, keystore file name is " + keystoreName);
           selected.setGenerated(true);
-          return;
+          return true;
         }
         clearScreen();
         terminal.writer().println("\n=== Selected Address ===");
@@ -222,12 +227,19 @@ public class SubAccount {
         terminal.flush();
         reader.readLine();
       } else {
-        showError("Invalid address number!");
+        terminal.writer().println("("+ start + "-" + end +") is valid");
+        terminal.writer().println("Invalid index input!");
+        terminal.flush();
+        return false;
       }
-    } catch (NumberFormatException e) {
-      showError("Invalid input!");
+    } catch (Exception e) {
+      terminal.writer().println("Generate selected address error");
+      terminal.flush();
+      return false;
     }
+    return true;
   }
+
 
   private void showError(String message) {
     terminal.writer().println("\n" + message);
@@ -238,46 +250,127 @@ public class SubAccount {
 
   public void start() throws Exception {
     while (true) {
-      displayCurrentPage();
-      String command = reader.readLine().trim().toUpperCase();
+      clearScreen();
+      Integer firstIndex = getFirstNonGeneratedPathIndex();
+      if (firstIndex == null) {
+        System.out.println("All sub accounts have been generated!");
+        break;
+      }
+      String defaulFullPath = buildFullPath("0", firstIndex.toString());
+      WalletAddress walletAddress = this.generateWalletAddressByCustomPath(
+          mnemonic, defaulFullPath);
 
-      switch (command) {
-        case "P":
-          if (currentPage > 0) {
-            currentPage--;
-          } else {
-            showError("Already at first page!");
-          }
+      terminal.writer().println("\n=== Sub Account Generator ===");
+
+      terminal.writer().println("-------------------------------");
+      terminal.writer().println("Default Address: " + walletAddress.getAddress());
+      terminal.writer().println("Default Path: " + defaulFullPath);
+      terminal.writer().println("-------------------------------\n");
+
+      terminal.writer().println("1. Generate Default Path");
+      terminal.writer().println("2. Change Account");
+      terminal.writer().println("3. Custom Path\n");
+      terminal.writer().print("Enter your choice (1-3): ");
+      terminal.flush();
+
+      String choice = reader.readLine().trim();
+      if (choice.equals("1")) {
+        try {
+          genDefaultPath(defaulFullPath, walletAddress);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        break;
+      } else if (choice.equals("2")) {
+        changeAccount();
+        break;
+      } else if (choice.equals("3")) {
+        boolean ret = generateByCustomPath();
+        if (!ret) {
+          continue;
+        } else {
           break;
-        case "N":
-          if (currentPage < totalPages - 1) {
-            currentPage++;
-          } else {
-            showError("Already at last page!");
-          }
-          break;
-        case "S":
-          handleSelectAddress();
-          break;
-        case "C":
-          generateByCustomPath();
-          break;
-        case "Q":
-          return;
-        default:
-          showError("Invalid command!");
-          break;
+        }
+      } else {
+        showError("Invalid choice!");
       }
     }
   }
 
-  public void generateByCustomPath() throws Exception {
+  public void genDefaultPath(String path, WalletAddress walletAddress) throws Exception {
+    if (MnemonicUtils.generatedAddress(walletAddress.getAddress())) {
+      terminal.writer().println("The path is already generated...");
+      terminal.flush();
+      return;
+    }
+
+    WalletFile walletFile = WalletApi.CreateWalletFile(password
+        , walletAddress.privateKey
+        , MnemonicUtils.stringToMnemonicWords(mnemonic)
+    );
+    String keystoreName = WalletApi.store2Keystore(walletFile);
+    System.out.println("Generate a sub account successful, keystore file name is " + keystoreName);
+
     try {
+      int subAccountIndex = getSubAccountIndex(path);
+      this.addresses.get(subAccountIndex).setGenerated(true);
+    } catch (Exception e) {
+      //e.printStackTrace();
+    }
+  }
+
+  public void changeAccount() throws Exception {
+    while (true) {
+      displayCurrentPage();
+      String command = reader.readLine().trim().toUpperCase();
+      if (isNumeric(command)) {
+        boolean ret = handleSelectAddress(Integer.parseInt(command));
+        if (ret) {
+          break;
+        }
+      } else {
+        switch (command) {
+          case "P":
+            if (currentPage > 0) {
+              currentPage--;
+            } else {
+              showError("Already at first page!");
+            }
+            break;
+          case "N":
+            if (currentPage < totalPages - 1) {
+              currentPage++;
+            } else {
+              showError("Already at last page!");
+            }
+            break;
+          case "Q":
+            return;
+          default:
+            showError("Invalid command!");
+            break;
+        }
+      }
+    }
+  }
+
+  public boolean generateByCustomPath() {
+    try {
+      boolean ret = printRiskAlert();
+      if (!ret) {
+        return false;
+      }
       String pathFull = handlePathInput();
+      if (pathFull == null || pathFull.isEmpty()) {
+        return false;
+      }
       generateSubAccountByCustomPath(pathFull);
     } catch (Exception e) {
+      // debug
       e.printStackTrace();
+      return false;
     }
+    return true;
   }
 
   private void generateSubAccountByCustomPath(String path) throws CipherException, IOException {
@@ -295,10 +388,9 @@ public class SubAccount {
         .append("\n");
     terminal.writer().println(result.toAnsi());
     terminal.flush();
-    String response = reader.readLine("Continue? (y/n): ").trim().toLowerCase();
+    String response = reader.readLine("Input y/yes to generate the subaccount? (y/yes): ").trim().toLowerCase();
     if (!response.equalsIgnoreCase("y")
         && !response.equalsIgnoreCase("yes")) {
-      terminal.writer().println("Exiting...");
       return;
     }
     WalletFile walletFile = WalletApi.CreateWalletFile(password
@@ -307,22 +399,50 @@ public class SubAccount {
     );
     String keystoreName = WalletApi.store2Keystore(walletFile);
     System.out.println("Generate a sub account successful, keystore file name is " + keystoreName);
+
+    try {
+      int subAccountIndex = getSubAccountIndex(path);
+      this.addresses.get(subAccountIndex).setGenerated(true);
+    } catch (Exception e) {
+      //e.printStackTrace();
+    }
   }
 
   private String handlePathInput() {
     try {
       printInstructions();
       String firstNumber = getValidInput("Enter first number: ", 0);
+      if (firstNumber == null) {
+        return "";
+      }
       String secondNumber = getValidInput("Enter second number: ", 1);
+      if (secondNumber == null) {
+        return "";
+      }
       String fullPath = buildFullPath(firstNumber, secondNumber);
       displayResult(fullPath, firstNumber, secondNumber);
       return fullPath;
-    } catch (UserInterruptException e) {
-      terminal.writer().println("\nOperation cancelled.");
     } catch (Exception e) {
       terminal.writer().println("\nAn error occurred: " + e.getMessage());
     }
     return "";
+  }
+
+  private boolean printRiskAlert() {
+    System.out.println("\nRisk Alert");
+    System.out.println("You are not advised to change the \"Path\" of a generated account address unless you are an advanced user.");
+    System.out.println("Please do not use the \"Custom Path\" feature if you do not understand how account addresses are generated or the definition of \"Path\", " +
+        "in case you lose access to the new account generated.\n");
+
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Enter 'y' (Understand the Risks & Continue)");
+
+    String input = scanner.nextLine().trim().toLowerCase();
+    if ("y".equals(input)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void printInstructions() {
@@ -337,22 +457,27 @@ public class SubAccount {
   }
 
   private String getValidInput(String prompt, int position) {
-    while (true) {
+    int attempts = 0;
+    final int MAX_ATTEMPTS = 3;
+
+    while (attempts < MAX_ATTEMPTS) {
       try {
         AttributedStringBuilder asb = new AttributedStringBuilder()
             .append(prompt, AttributedStyle.BOLD);
         String input = reader.readLine(asb.toAnsi());
         if (!input.matches("^\\d+$")) {
           printError("Please enter a valid number");
+          attempts++;
           continue;
         }
         return input;
-      } catch (UserInterruptException e) {
-        throw e;
       } catch (Exception e) {
         printError("Invalid input: " + e.getMessage());
+        attempts++;
       }
     }
+    printError("Maximum attempts reached. Exiting.");
+    return null;
   }
 
   private void printError(String message) {
@@ -374,6 +499,65 @@ public class SubAccount {
         .append(path);
     terminal.writer().println(result.toAnsi());
     terminal.flush();
+  }
+
+  public int getSubAccountIndex(String path) {
+    if (path == null || path.isEmpty()) {
+      throw new IllegalArgumentException("Path cannot be null or empty");
+    }
+    String[] parts = path.split("/");
+    if (parts.length < 5) {
+      throw new IllegalArgumentException("Path does not have enough parts");
+    }
+    if (!"0'".equals(parts[3])) {
+      throw new IllegalArgumentException("The fourth parameter is not 0");
+    }
+    String lastPart = parts[parts.length - 1];
+    try {
+      return Integer.parseInt(lastPart);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Invalid format: last part is not a number");
+    }
+  }
+
+  public Integer getFirstNonGeneratedPathIndex() {
+    for (WalletAddress walletAddress : addresses) {
+      if (!walletAddress.generated) {
+        return walletAddress.pathIndex;
+      }
+    }
+    return null; // Return null if all addresses are generated
+  }
+
+  // 0 => exit, 1 => gen default and exit, 2 => go to change account
+  public int handleDefaultPathGen() {
+    Scanner scanner = new Scanner(System.in);
+    int attempts = 0;
+    final int maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      System.out.println("Please enter Yes/Y or No/N:");
+      String input = scanner.nextLine().trim();
+
+      if (input.equalsIgnoreCase("Yes") || input.equalsIgnoreCase("Y")) {
+        return 1;
+      } else if (input.equalsIgnoreCase("No") || input.equalsIgnoreCase("N")) {
+        return 2;
+      } else {
+        attempts++;
+        if (attempts < maxAttempts) {
+          System.out.println("Invalid input. Please try again.");
+        }
+        return 0;
+      }
+    }
+
+    if (attempts == maxAttempts) {
+      System.out.println("Maximum attempts reached. Exiting.");
+    }
+
+    scanner.close();
+    return 0;
   }
 
 }
